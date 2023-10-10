@@ -1,14 +1,8 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
-// import { authContext } from "../../context";
-import { NavLinksList } from "../Navbar/NavLinksList";
-import { LogOut } from "../Navbar/LogOut";
-import { NavButtonGroup } from "../Navbar/NavButtonGroup";
-
-// import "../../styles/__navbar.css";
+import { NavLinksList } from "../Nav/NavLinksList";
 import { Flex, HStack, IconButton, Image, Text } from "@chakra-ui/react";
-// import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 
 export const NavBar = () => {
   const links = ["Productos", "Ordenes"];

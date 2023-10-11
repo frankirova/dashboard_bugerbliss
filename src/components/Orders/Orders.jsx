@@ -1,6 +1,6 @@
 import {
   Button,
-  Center,
+  Tag,
   Flex,
   HStack,
   Heading,
@@ -14,7 +14,7 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { order } from "../../supabase/orders";
 import { AddProductFormButton } from "../Modals/AddProduct/AddProductButton";
 import { EditProductButton } from "../Modals/UpdateProduct/EditProductButton";
@@ -22,13 +22,23 @@ import { DeleteProductButton } from "../Modals/DeleteProduct/DeleteProductButton
 
 import { supabase } from "../../supabase/config";
 import { DownloadIcon } from "../../icons/DownloadIcon";
+import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const Orders = () => {
+  const navigate = useNavigate();
+
   const [orders, setOrders] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { user } = useContext(AuthContext);
+  console.log(user);
+  if (!user) {
+    return <Box bg={'secondary'} minH={24} minW={24}>Tenes que iniciar sesion pa</Box>
+  }
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const orderList = await order.list();
+        const orderList = await order.list(currentPage);
         setOrders(orderList);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -36,7 +46,7 @@ export const Orders = () => {
     };
 
     fetchData();
-  }, []);
+  }, [currentPage]);
   const handleSub = () => {
     const subscription = supabase
       .channel("new_channel_for_order")
@@ -75,7 +85,7 @@ export const Orders = () => {
   if (!tHead) return;
 
   return (
-    <Flex direction="column" width="100%">
+    <Flex direction="column" width="100%" gap={4}>
       <Heading textAlign="center" py={8}>
         Ordenes del dia
       </Heading>
@@ -130,6 +140,18 @@ export const Orders = () => {
           </Table>
         </TableContainer>
       </Flex>
+      <HStack justify={"center"} py={4}>
+        <Button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Página anterior
+        </Button>
+        <Tag size="lg">{currentPage}</Tag>
+        <Button onClick={() => setCurrentPage(currentPage + 1)}>
+          Página siguiente
+        </Button>
+      </HStack>
     </Flex>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Box,
   Button,
   Center,
   Flex,
@@ -17,10 +18,15 @@ import { product } from "../../supabase/products";
 import { AddProductFormButton } from "../Modals/AddProduct/AddProductButton";
 import { EditProductButton } from "../Modals/UpdateProduct/EditProductButton";
 import { DeleteProductButton } from "../Modals/DeleteProduct/DeleteProductButton";
+import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const Products = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-
+  const { user } = useContext(AuthContext);
+  console.log(user);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,6 +42,24 @@ export const Products = () => {
 
   const tHead = products.length > 0 ? Object.keys(products[0]) : [];
 
+  if (!user) {
+    return (
+      <Flex justify={"center"} minH={"85vh"}>
+        <Flex
+          fontWeight={"bold"}
+          align={"center"}
+          justify={"center"}
+          bg={"secondary"}
+          color={"primary"}
+          fontSize={"8xl"}
+          minH={24}
+          minW={24}
+        >
+          Tenes que iniciar sesion pa
+        </Flex>
+      </Flex>
+    );
+  }
   return (
     <Flex direction="column" maxWidth="100vw" minH={"100vh"}>
       <Heading textAlign="center" py={8}>

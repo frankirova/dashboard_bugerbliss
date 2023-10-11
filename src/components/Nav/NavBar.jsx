@@ -1,12 +1,21 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { NavLinksList } from "../Nav/NavLinksList";
-import { Flex, HStack, IconButton, Image, Text } from "@chakra-ui/react";
-
+import {
+  Button,
+  Flex,
+  HStack,
+  IconButton,
+  Image,
+  Text,
+} from "@chakra-ui/react";
+import { AuthContext } from "../../context/AuthContext";
+import { LogOut } from "./LogOut";
 
 export const NavBar = () => {
   const links = ["Productos", "Ordenes"];
   const [display, setDisplay] = useState("none");
+  const { user, handleLogin } = useContext(AuthContext);
   return (
     <Flex mt="auto" justify="space-around" bgColor="secondary" minH="10vh">
       <Flex
@@ -28,6 +37,8 @@ export const NavBar = () => {
         >
           <NavLinksList links={links} setDisplay={setDisplay} />
         </Flex>
+
+        {user ? <LogOut /> : <Button onClick={handleLogin}>Login</Button>}
 
         <Flex
           gap={3}

@@ -1,12 +1,14 @@
 import { supabase } from "./config";
 export const order = {
-  list: async () => {
+  list: async (currentPage) => {
     try {
+      const ordersPerPage = 30
+      const offset = (currentPage - 1) * ordersPerPage;
       const response = await supabase
         .from("orders")
         .select("*")
-        .order("created_at", { ascending: false });
-
+        .order("created_at", { ascending: false })
+        .range(offset, offset + ordersPerPage - 1);
       const orders = await response.data;
       return orders;
     } catch (error) {

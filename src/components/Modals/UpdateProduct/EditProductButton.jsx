@@ -16,19 +16,10 @@ export const EditProductButton = ({ productId }) => {
 
   return (
     <div>
-      <Button
-        // mt={4}
-        // px={4}
-        // py={2}
-        // rounded="md"
-        // bg="blue.500"
-        // color="white"
-        // fontWeight="medium"
-        onClick={onOpen}
-      >
+      <Button onClick={onOpen}>
         <UpdateIcon />
-        <ModalEdit id={productId} onClose={onClose} isOpen={isOpen} />
       </Button>
+      <ModalEdit id={productId} onClose={onClose} isOpen={isOpen} />
     </div>
   );
 };

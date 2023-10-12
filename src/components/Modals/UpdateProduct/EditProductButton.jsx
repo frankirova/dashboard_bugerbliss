@@ -1,13 +1,4 @@
-import React from "react";
-import {
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Button, useDisclosure } from "@chakra-ui/react";
 import { ModalEdit } from "./ModalEdit";
 import { UpdateIcon } from "../../../icons/UpdateIcon";
 

@@ -19,4 +19,13 @@ export const user = {
       console.error("Error inesperado:", error.message);
     }
   },
+  add_off_customer: async (client) => {
+    try {
+      await supabase.from("off_customers").upsert(client);
+      const response = await supabase.from("off_customers").select();
+      const clients = await response.data;
+    } catch (error) {
+      console.error("Error adding client:", error);
+    }
+  },
 };

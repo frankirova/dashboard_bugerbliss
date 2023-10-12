@@ -1,4 +1,3 @@
-import React from "react";
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 
 export const ProductForm = ({ handleChange }) => {
@@ -19,10 +18,10 @@ export const ProductForm = ({ handleChange }) => {
       <FormControl>
         <FormLabel>Imagen</FormLabel>
         <Input
-          type="file"
-          name="image"
           id="fileInput"
+          name="image"
           onChange={handleChange}
+          type="file"
         />
       </FormControl>
     </form>

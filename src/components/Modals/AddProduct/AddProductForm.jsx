@@ -1,18 +1,8 @@
-import React from "react";
-import {
-  Box,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "@chakra-ui/react";
 import { getUuid } from "../../../helpers";
-import { useForm } from "../../../hooks/useForm";
-import { ProductForm } from "../AddProduct/ProductForm";
+import { MyModal } from "../MyModal";
 import { product } from "../../../supabase/products";
+import { ProductForm } from "../AddProduct/ProductForm";
+import { useForm } from "../../../hooks/useForm";
 
 export const AddProductForm = ({ isOpen, onClose }) => {
   const initialState = {
@@ -32,24 +22,19 @@ export const AddProductForm = ({ isOpen, onClose }) => {
       onClose();
     }
   };
-
+  const header = "Agregar producto";
+  const textButtonOk = "Guardar";
+  const textButtonCancel = "Cancelar";
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Agregar Producto</ModalHeader>
-        <ModalBody>
-          <ProductForm handleChange={handleChange} onClose={onClose} />
-        </ModalBody>
-        <ModalFooter>
-          <Button variant="ghost" onClick={onClose}>
-            Cancelar
-          </Button>
-          <Button colorScheme="primary" onClick={handleSubmit}>
-            Guardar
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+    <MyModal
+      handleChange={handleChange}
+      handleSubmit={handleSubmit}
+      header={header}
+      isOpen={isOpen}
+      modalBody={<ProductForm handleChange={handleChange} />}
+      onClose={onClose}
+      textButtonCancel={textButtonCancel}
+      textButtonOk={textButtonOk}
+    />
   );
 };

@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
         }
       }
     );
-
     return () => {
       authListener.subscription;
     };
@@ -33,7 +32,6 @@ export const AuthProvider = ({ children }) => {
       if (error) {
         throw new Error("Error durante el inicio de sesion");
       }
-      // setIsLoggedIn(true);
       return data;
     } catch (error) {
       console.error("Hubo un error:" + error);

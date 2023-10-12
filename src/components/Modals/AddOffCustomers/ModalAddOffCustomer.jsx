@@ -1,36 +1,35 @@
+import { FormAddOffCustomer } from "./FormAddOffCustomer";
+import { getUuid } from "../../../helpers";
 import { MyModal } from "../MyModal";
-import { product } from "../../../supabase/products";
-import { ProductForm } from "../AddProduct/ProductForm";
 import { useForm } from "../../../hooks/useForm";
+import { user } from "../../../supabase/user";
 
-export const ModalEdit = ({ isOpen, onClose, id }) => {
+export const ModalAddOffCustomer = ({ isOpen, onClose }) => {
   const initialState = {
     id: "",
     name: "",
-    price: 1,
-    image: "",
-    stock: 1,
+    phone: "",
   };
-  const header = "Editar Producto";
-  const textButtonOk = "Si, editar producto";
-  const textButtonCancel = " No, cerrar";
+
   const { formState, handleChange } = useForm(initialState);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formState) {
-      product.update({ ...formState, id: id }, id);
+      user.add_off_customer({ ...formState, id: getUuid() });
+      console.log({ ...formState, id: getUuid() });
       onClose();
     }
   };
-
+  const header = "Agregar CUPON";
+  const textButtonOk = "Guardar";
+  const textButtonCancel = "Cancelar";
   return (
     <MyModal
-      handleChange={handleChange}
       handleSubmit={handleSubmit}
       header={header}
       isOpen={isOpen}
-      modalBody={<ProductForm handleChange={handleChange} />}
+      modalBody={<FormAddOffCustomer handleChange={handleChange} />}
       onClose={onClose}
       textButtonCancel={textButtonCancel}
       textButtonOk={textButtonOk}

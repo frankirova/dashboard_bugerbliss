@@ -1,5 +1,6 @@
 import {
   Button,
+  Box,
   Tag,
   Flex,
   HStack,
@@ -24,6 +25,7 @@ import { supabase } from "../../supabase/config";
 import { DownloadIcon } from "../../icons/DownloadIcon";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { ButtonAddOffCustomer } from "../Modals/AddOffCustomers/ButtonAddOffCustomer";
 
 export const Orders = () => {
   const navigate = useNavigate();
@@ -33,7 +35,11 @@ export const Orders = () => {
   const { user } = useContext(AuthContext);
   console.log(user);
   if (!user) {
-    return <Box bg={'secondary'} minH={24} minW={24}>Tenes que iniciar sesion pa</Box>
+    return (
+      <Box bg={"secondary"} minH={24} minW={24}>
+        Tenes que iniciar sesion pa
+      </Box>
+    );
   }
   useEffect(() => {
     const fetchData = async () => {
@@ -93,7 +99,7 @@ export const Orders = () => {
         <Button onClick={() => order.download()}>
           <DownloadIcon />
         </Button>
-        {/* <AddProductFormButton /> */}
+        <ButtonAddOffCustomer />
       </HStack>
       <Flex p={4}>
         <TableContainer>

@@ -38,12 +38,12 @@ import { ButtonAddOffCustomer } from "../Modals/AddOffCustomers/ButtonAddOffCust
 
 export const Orders = () => {
   const navigate = useNavigate();
+  const [filterState, setFilterState] = useState('Todas');
   const [orderStates, setOrderStates] = useState({});
   const [otherData, setOtherData] = useState(null);
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const { user } = useContext(AuthContext);
-  console.log(orders);
 
   if (!user) {
     return (
@@ -52,33 +52,33 @@ export const Orders = () => {
       </Box>
     );
   }
-
+console.log(filterState)
   const options = [
     { value: "no-leido", label: "No leído", color: "red.500" },
     { value: "produccion", label: "En producción", color: "orange.500" },
     { value: "entregado", label: "Entregado", color: "green.500" },
   ];
 
+  const handleFilterChange = (event) => {
+    setFilterState(event.target.value);
+  };
+
   const handleStatusChange = (orderId, value) => {
     setOrderStates((prevOrderStates) => {
-      // Copia el estado anterior
       const updatedOrderStates = { ...prevOrderStates };
-      // Actualiza el estado de la orden específica
       updatedOrderStates[orderId] = { value: value, id: orderId };
       return updatedOrderStates;
     });
     order.updateStateOrder(orderId, value);
     setOtherData(new Date());
-    // setTimeout(fetchData()), 2000;
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         const orderList = await order.list(currentPage);
         setOrders(orderList);
-        console.log("useEffect");
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -147,6 +147,11 @@ export const Orders = () => {
     return fechaFormateada; // Salida: "2023-10-10 12:47:41"
   };
 
+  const filteredOrders =
+    filterState === "Todas"
+      ? orders
+      : orders.filter((order) => order.state === filterState);
+
   if (!orders) return;
   if (!tHead) return;
 
@@ -160,6 +165,14 @@ export const Orders = () => {
           <DownloadIcon />
         </Button>
         <ButtonAddOffCustomer />
+        {/* <Button onClick={setFilterState('Todas')}>Filter</Button> */}
+
+        <Select value={filterState} onChange={handleFilterChange}>
+          <option value="Todas">Todas</option>
+          <option value="En producción">En produccion</option>
+          <option value="Entregado">Entregado</option>
+          <option value="No leído">No leido</option>
+        </Select>
       </HStack>
       <Flex p={4}>
         <TableContainer>
@@ -172,7 +185,7 @@ export const Orders = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {orders.map((order) => (
+              {filteredOrders.map((order) => (
                 <Tr key={order.id}>
                   <Td>{order.id}</Td>
                   <Td>{formatDate(order.created_at)}</Td>

@@ -1,4 +1,6 @@
 import { supabase } from "./config";
+// import { toCSV } from "supabase/supabase-js";
+
 export const order = {
   list: async (currentPage) => {
     try {
@@ -44,33 +46,58 @@ export const order = {
   },
   download: async () => {
     try {
-      const { data, error } = await supabase.from("orders").select("*"); // Reemplaza "tu_tabla" con el nombre de tu tabla
+      const { data, error } = await supabase.from("orders").select().csv();
 
       if (error) {
-        throw error;
+        console.error("Error al descargar CSV:", error);
+        return;
       }
 
-      if (data && data.length > 0) {
-        const csvData = data.map((row) => {
-          // Formatea los datos como una fila CSV (puedes personalizar esto según tus necesidades)
-          return `${row.columna1},${row.columna2},${row.columna3}`; // Reemplaza "columna1", "columna2", etc., con los nombres de tus columnas
-        });
+      const blob = new Blob([data], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
 
-        const csvContent = `Columna1,Columna2,Columna3\n${csvData.join("\n")}`;
+      // Crea un enlace de descarga para el archivo CSV
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "datos.csv"; // Nombre del archivo CSV
+      document.body.appendChild(a);
+      a.click();
 
-        // Crea un enlace de descarga para el archivo CSV
-        const blob = new Blob([csvContent], { type: "text/csv" });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.style.display = "none"; // Oculta el elemento <a>
-        a.href = url;
-        a.download = "datos.csv"; // Nombre del archivo CSV
-        document.body.appendChild(a); // Agrega el elemento <a> al cuerpo del documento
-        a.click(); // Simula un clic en el elemento <a>
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a); //
-      }
+      // Libera recursos
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     } catch (error) {
+      // const csv = data.toCSV();
+
+      // // Descarga el archivo CSV
+      // const blob = new Blob([csv], { type: "text/csv" });
+      // const link = document.createElement("a");
+      // link.href = window.URL.createObjectURL(blob);
+      // link.download = "my_table.csv";
+      // link.click();
+
+      // if (data && data.length > 0) {
+      //   const csvData = data.map((row) => {
+      //     // Formatea los datos como una fila CSV (puedes personalizar esto según tus necesidades)
+      //     return `${row.id},${row.created_at},${row.buyer}, ${row.items}, ${row.total}, ${row.state}`; // Reemplaza "columna1", "columna2", etc., con los nombres de tus columnas
+      //   });
+
+      //   const csvContent = `"ID","Fecha de Creación","Comprador","Ítems","Total","Estado"\n${csvData.join(
+      //     "\n"
+      //   )}`;
+
+      //   // Crea un enlace de descarga para el archivo CSV
+      //   const blob = new Blob([csvContent], { type: "text/csv" });
+      //   const url = window.URL.createObjectURL(blob);
+      //   const a = document.createElement("a");
+      //   a.style.display = "none"; // Oculta el elemento <a>
+      //   a.href = url;
+      //   a.download = "datos.csv"; // Nombre del archivo CSV
+      //   document.body.appendChild(a); // Agrega el elemento <a> al cuerpo del documento
+      //   a.click(); // Simula un clic en el elemento <a>
+      //   window.URL.revokeObjectURL(url);
+      //   document.body.removeChild(a); //
+      //}
       console.error("Error al exportar datos a CSV:", error);
     }
   },
@@ -90,8 +117,8 @@ export const order = {
   },
   updateStateOrder: async (orderId, value) => {
     const { data, error } = await supabase
-    .from('orders')
-    .update({ state: value })
-    .eq('id', orderId);
+      .from("orders")
+      .update({ state: value })
+      .eq("id", orderId);
   },
 };

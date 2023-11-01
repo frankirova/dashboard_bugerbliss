@@ -2,7 +2,7 @@ import { supabase } from "./config";
 export const order = {
   list: async (currentPage) => {
     try {
-      const ordersPerPage = 30
+      const ordersPerPage = 30;
       const offset = (currentPage - 1) * ordersPerPage;
       const response = await supabase
         .from("orders")
@@ -87,5 +87,11 @@ export const order = {
     subscription.error((error) => {
       console.error("Error en la suscripción:", error.message);
     });
+  },
+  updateStateOrder: async (orderId, value) => {
+    const { data, error } = await supabase
+    .from('orders')
+    .update({ state: value })
+    .eq('id', orderId);
   },
 };

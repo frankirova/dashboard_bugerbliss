@@ -1,12 +1,13 @@
 import {
   Button,
+  HStack,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
 } from "@chakra-ui/react";
 export const MyModal = ({
   isOpen,
@@ -25,12 +26,14 @@ export const MyModal = ({
         <ModalCloseButton />
         <ModalBody>{modalBody}</ModalBody>
         <ModalFooter>
-          <Button colorScheme="gray" onClick={onClose}>
-            {textButtonCancel}
-          </Button>
-          <Button colorScheme="blue" onClick={handleSubmit}>
-            {textButtonOk}
-          </Button>
+          <HStack>
+            <Button colorScheme="gray" onClick={onClose}>
+              {textButtonCancel}
+            </Button>
+            <Button colorScheme="blue" onClick={handleSubmit}>
+              {textButtonOk}
+            </Button>
+          </HStack>
         </ModalFooter>
       </ModalContent>
     </Modal>

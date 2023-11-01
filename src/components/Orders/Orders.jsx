@@ -14,6 +14,15 @@ import {
   Th,
   Thead,
   Tr,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverFooter,
+  Select,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { order } from "../../supabase/orders";
@@ -29,11 +38,13 @@ import { ButtonAddOffCustomer } from "../Modals/AddOffCustomers/ButtonAddOffCust
 
 export const Orders = () => {
   const navigate = useNavigate();
-
+  const [orderStates, setOrderStates] = useState({});
+  const [otherData, setOtherData] = useState(null);
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const { user } = useContext(AuthContext);
-  console.log(user);
+  console.log(orders);
+
   if (!user) {
     return (
       <Box bg={"secondary"} minH={24} minW={24}>
@@ -41,32 +52,81 @@ export const Orders = () => {
       </Box>
     );
   }
+
+  const options = [
+    { value: "no-leido", label: "No leído", color: "red.500" },
+    { value: "produccion", label: "En producción", color: "orange.500" },
+    { value: "entregado", label: "Entregado", color: "green.500" },
+  ];
+
+  const handleStatusChange = (orderId, value) => {
+    setOrderStates((prevOrderStates) => {
+      // Copia el estado anterior
+      const updatedOrderStates = { ...prevOrderStates };
+      // Actualiza el estado de la orden específica
+      updatedOrderStates[orderId] = { value: value, id: orderId };
+      return updatedOrderStates;
+    });
+    order.updateStateOrder(orderId, value);
+    setOtherData(new Date());
+    // setTimeout(fetchData()), 2000;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
         const orderList = await order.list(currentPage);
         setOrders(orderList);
+        console.log("useEffect");
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
-
     fetchData();
-  }, [currentPage]);
+  }, [currentPage, orderStates, setOtherData]);
+
+  // const handleSub = () => {
+  //   const subscription = supabase
+  //     .channel("new_channel_for_order")
+  //     .on(
+  //       "postgres_changes",
+  //       { event: "*", shcema: "public", table: "orders" },
+  //       (payload) => {
+  //         // console.log([...orders, payload.new]);
+  //         setOrders([payload.new, ...orders]);
+  //         // setOrders([payload.new]);
+
+  //       }
+  //     )
+  //     .subscribe();
+  // };
+  // handleSub();
+
   const handleSub = () => {
     const subscription = supabase
       .channel("new_channel_for_order")
       .on(
         "postgres_changes",
-        { event: "*", shcema: "public", table: "orders" },
+        { event: "*", schema: "public", table: "orders" },
         (payload) => {
-          console.log([...orders, payload.new]);
-          setOrders([payload.new, ...orders]);
+          // Verifica si el nuevo elemento ya existe en la lista
+          const isNewOrderDuplicate = orders.find(
+            (order) => order.id === payload.new.id
+          );
+
+          if (!isNewOrderDuplicate) {
+            console.log("nodup");
+            // Si no es un duplicado, agrega el nuevo elemento al inicio de la lista
+            setOrders([payload.new, ...orders]);
+          }
         }
       )
       .subscribe();
   };
+
   handleSub();
+
   const tHead = orders.length > 0 ? Object.keys(orders[0]) : [];
 
   const formatDate = (fechaOriginal) => {
@@ -127,6 +187,76 @@ export const Orders = () => {
                     ))}
                   </Td>
                   <Td>{order.total}</Td>
+
+                  {/* <Td>
+                    <Flex alignItems="center">
+                      <Popover>
+                        <PopoverTrigger>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            textAlign="left"
+                            leftIcon={
+                              <Box
+                                as="span"
+                                boxSize="20px"
+                                borderRadius="50%"
+                                backgroundColor={getStatusColor(order)}
+                                display="inline-block"
+                                marginRight="5px"
+                              />
+                            }
+                          >
+                            {order.state}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <PopoverArrow />
+                          <PopoverCloseButton />
+                          <PopoverHeader>Estado de la orden</PopoverHeader>
+                          <PopoverBody>
+                            {options.map((option) => (
+                              <Button
+                                key={option.value}
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  handleStatusChange(order.id, option.value)
+                                }
+                                justifyContent="start"
+                              >
+                                <Flex alignItems="center">
+                                  <Box
+                                    as="span"
+                                    boxSize="20px"
+                                    borderRadius="50%"
+                                    backgroundColor={option.color}
+                                    display="inline-block"
+                                    marginRight="5px"
+                                  />
+                                  {option.label}
+                                </Flex>
+                              </Button>
+                            ))}
+                          </PopoverBody>
+                        </PopoverContent>
+                      </Popover>
+                    </Flex>
+                  </Td> */}
+
+                  <Select
+                    value={order.state}
+                    onChange={(e) =>
+                      handleStatusChange(order.id, e.target.value)
+                    }
+                  >
+                    {options.map((status) => (
+                      <option key={status.label} value={status.label}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </Select>
+
                   <Td>
                     <Image src={order.image} width="64px" />
                   </Td>

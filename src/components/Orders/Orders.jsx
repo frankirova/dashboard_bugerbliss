@@ -54,7 +54,7 @@ export const Orders = () => {
   }
 console.log(filterState)
   const options = [
-    { value: "no-leido", label: "No leído", color: "red.500" },
+    { value: "no-leido", label: "No leido", color: "red.500" },
     { value: "produccion", label: "En producción", color: "orange.500" },
     { value: "entregado", label: "Entregado", color: "green.500" },
   ];

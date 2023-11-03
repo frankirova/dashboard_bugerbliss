@@ -38,8 +38,9 @@ import { ButtonAddOffCustomer } from "../Modals/AddOffCustomers/ButtonAddOffCust
 
 export const Orders = () => {
   const navigate = useNavigate();
-  const [filterState, setFilterState] = useState('Todas');
+  const [filterState, setFilterState] = useState("Todas");
   const [orderStates, setOrderStates] = useState({});
+  console.log(orderStates)
   const [otherData, setOtherData] = useState(null);
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,7 +53,7 @@ export const Orders = () => {
       </Box>
     );
   }
-console.log(filterState)
+  console.log(filterState);
   const options = [
     { value: "no-leido", label: "No leído", color: "red.500" },
     { value: "produccion", label: "En producción", color: "orange.500" },
@@ -168,10 +169,13 @@ console.log(filterState)
         {/* <Button onClick={setFilterState('Todas')}>Filter</Button> */}
 
         <Select value={filterState} onChange={handleFilterChange}>
-          <option value="Todas">Todas</option>
+          {options.map((option) => (
+            <option value={option.label}>{option.label}</option>
+          ))}
+          {/* <option value="Todas">Todas</option>
           <option value="En producción">En produccion</option>
           <option value="Entregado">Entregado</option>
-          <option value="No leído">No leido</option>
+          <option value="No leído">No leido</option> */}
         </Select>
       </HStack>
       <Flex p={4}>

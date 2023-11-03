@@ -14,19 +14,10 @@ import {
   Th,
   Thead,
   Tr,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverFooter,
   Select,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { order } from "../../supabase/orders";
-import { AddProductFormButton } from "../Modals/AddProduct/AddProductButton";
 import { EditProductButton } from "../Modals/UpdateProduct/EditProductButton";
 import { DeleteProductButton } from "../Modals/DeleteProduct/DeleteProductButton";
 
@@ -35,17 +26,18 @@ import { DownloadIcon } from "../../icons/DownloadIcon";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { ButtonAddOffCustomer } from "../Modals/AddOffCustomers/ButtonAddOffCustomer";
+import { formatDate } from "../../helpers";
 
 export const Orders = () => {
-  const navigate = useNavigate();
+  //ESTADOS
   const [filterState, setFilterState] = useState("Todas");
   const [orderStates, setOrderStates] = useState({});
-  console.log(orderStates)
   const [otherData, setOtherData] = useState(null);
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const { user } = useContext(AuthContext);
 
+  //PAGINA QUE SE MUESTRA SI NO ESTAS LOGUEADO
   if (!user) {
     return (
       <Box bg={"secondary"} minH={24} minW={24}>
@@ -53,17 +45,21 @@ export const Orders = () => {
       </Box>
     );
   }
-  console.log(filterState);
+
   const options = [
     { value: "no-leido", label: "No leído", color: "red.500" },
     { value: "produccion", label: "En producción", color: "orange.500" },
     { value: "entregado", label: "Entregado", color: "green.500" },
+    { value: "todas", label: "Todas", color: "green.500" },
+
   ];
 
+  //CONTROLADOR DEL FILTRO
   const handleFilterChange = (event) => {
     setFilterState(event.target.value);
   };
 
+  //CONTROLADOR DEL CAMBIO DE ORDERSTATE
   const handleStatusChange = (orderId, value) => {
     setOrderStates((prevOrderStates) => {
       const updatedOrderStates = { ...prevOrderStates };
@@ -74,6 +70,7 @@ export const Orders = () => {
     setOtherData(new Date());
   };
 
+  // FETCH DE LAS ORDERS
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -87,23 +84,7 @@ export const Orders = () => {
     fetchData();
   }, [currentPage, orderStates, setOtherData]);
 
-  // const handleSub = () => {
-  //   const subscription = supabase
-  //     .channel("new_channel_for_order")
-  //     .on(
-  //       "postgres_changes",
-  //       { event: "*", shcema: "public", table: "orders" },
-  //       (payload) => {
-  //         // console.log([...orders, payload.new]);
-  //         setOrders([payload.new, ...orders]);
-  //         // setOrders([payload.new]);
-
-  //       }
-  //     )
-  //     .subscribe();
-  // };
-  // handleSub();
-
+  //SUBSCRIPCION A LOS CAMBIOS EN LA TABLA ORDERS EN SUPABASE
   const handleSub = () => {
     const subscription = supabase
       .channel("new_channel_for_order")
@@ -111,42 +92,35 @@ export const Orders = () => {
         "postgres_changes",
         { event: "*", schema: "public", table: "orders" },
         (payload) => {
-          // Verifica si el nuevo elemento ya existe en la lista
           const isNewOrderDuplicate = orders.find(
             (order) => order.id === payload.new.id
           );
 
           if (!isNewOrderDuplicate) {
             console.log("nodup");
-            // Si no es un duplicado, agrega el nuevo elemento al inicio de la lista
             setOrders([payload.new, ...orders]);
           }
         }
       )
       .subscribe();
   };
-
   handleSub();
 
   const tHead = orders.length > 0 ? Object.keys(orders[0]) : [];
 
-  const formatDate = (fechaOriginal) => {
-    // Crear un objeto Date a partir de la cadena de fecha original
-    const fecha = new Date(fechaOriginal);
+  // const formatDate = (fechaOriginal) => {
+  //   const fecha = new Date(fechaOriginal);
+  //   const año = fecha.getFullYear();
+  //   const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+  //   const dia = String(fecha.getDate()).padStart(2, "0");
+  //   const horas = String(fecha.getHours()).padStart(2, "0");
+  //   const minutos = String(fecha.getMinutes()).padStart(2, "0");
+  //   const segundos = String(fecha.getSeconds()).padStart(2, "0");
 
-    // Obtener los componentes de la fecha
-    const año = fecha.getFullYear();
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0"); // Agregar ceros a la izquierda si es necesario
-    const dia = String(fecha.getDate()).padStart(2, "0");
-    const horas = String(fecha.getHours()).padStart(2, "0");
-    const minutos = String(fecha.getMinutes()).padStart(2, "0");
-    const segundos = String(fecha.getSeconds()).padStart(2, "0");
+  //   const fechaFormateada = `${dia}-${mes}-${año} ${horas}:${minutos}:${segundos}`;
 
-    // Formatear la fecha en el nuevo formato
-    const fechaFormateada = `${dia}-${mes}-${año} ${horas}:${minutos}:${segundos}`;
-
-    return fechaFormateada; // Salida: "2023-10-10 12:47:41"
-  };
+  //   return fechaFormateada;
+  // };
 
   const filteredOrders =
     filterState === "Todas"
@@ -161,23 +135,20 @@ export const Orders = () => {
       <Heading textAlign="center" py={8}>
         Ordenes del dia
       </Heading>
+
       <HStack spacing={4} justifyContent="center">
         <Button onClick={() => order.download()}>
           <DownloadIcon />
         </Button>
         <ButtonAddOffCustomer />
-        {/* <Button onClick={setFilterState('Todas')}>Filter</Button> */}
-
+        {/* //FILTER */}
         <Select value={filterState} onChange={handleFilterChange}>
           {options.map((option) => (
             <option value={option.label}>{option.label}</option>
           ))}
-          {/* <option value="Todas">Todas</option>
-          <option value="En producción">En produccion</option>
-          <option value="Entregado">Entregado</option>
-          <option value="No leído">No leido</option> */}
         </Select>
       </HStack>
+
       <Flex p={4}>
         <TableContainer>
           <Table variant="striped" colorScheme="tertiary">
@@ -204,76 +175,20 @@ export const Orders = () => {
                     ))}
                   </Td>
                   <Td>{order.total}</Td>
-
-                  {/* <Td>
-                    <Flex alignItems="center">
-                      <Popover>
-                        <PopoverTrigger>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            textAlign="left"
-                            leftIcon={
-                              <Box
-                                as="span"
-                                boxSize="20px"
-                                borderRadius="50%"
-                                backgroundColor={getStatusColor(order)}
-                                display="inline-block"
-                                marginRight="5px"
-                              />
-                            }
-                          >
-                            {order.state}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <PopoverArrow />
-                          <PopoverCloseButton />
-                          <PopoverHeader>Estado de la orden</PopoverHeader>
-                          <PopoverBody>
-                            {options.map((option) => (
-                              <Button
-                                key={option.value}
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  handleStatusChange(order.id, option.value)
-                                }
-                                justifyContent="start"
-                              >
-                                <Flex alignItems="center">
-                                  <Box
-                                    as="span"
-                                    boxSize="20px"
-                                    borderRadius="50%"
-                                    backgroundColor={option.color}
-                                    display="inline-block"
-                                    marginRight="5px"
-                                  />
-                                  {option.label}
-                                </Flex>
-                              </Button>
-                            ))}
-                          </PopoverBody>
-                        </PopoverContent>
-                      </Popover>
-                    </Flex>
-                  </Td> */}
-
-                  <Select
-                    value={order.state}
-                    onChange={(e) =>
-                      handleStatusChange(order.id, e.target.value)
-                    }
-                  >
-                    {options.map((status) => (
-                      <option key={status.label} value={status.label}>
-                        {status.label}
-                      </option>
-                    ))}
-                  </Select>
-
+                  <Td>
+                    <Select
+                      value={order.state}
+                      onChange={(e) =>
+                        handleStatusChange(order.id, e.target.value)
+                      }
+                    >
+                      {options.map((status) => (
+                        <option key={status.label} value={status.label}>
+                          {status.label}
+                        </option>
+                      ))}
+                    </Select>
+                  </Td>
                   <Td>
                     <Image src={order.image} width="64px" />
                   </Td>
@@ -293,6 +208,7 @@ export const Orders = () => {
           </Table>
         </TableContainer>
       </Flex>
+
       <HStack justify={"center"} py={4}>
         <Button
           onClick={() => setCurrentPage(currentPage - 1)}

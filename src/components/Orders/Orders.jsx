@@ -111,7 +111,7 @@ export const Orders = () => {
       ? orders
       : orders.filter((order) => order.state === filterState);
 
-  if (!orders) return;
+  if (!orders) return (<Box>Loading...</Box>);
   if (!tHead) return;
 
   return (

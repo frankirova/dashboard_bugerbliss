@@ -24,7 +24,6 @@ import { DeleteProductButton } from "../Modals/DeleteProduct/DeleteProductButton
 import { supabase } from "../../supabase/config";
 import { DownloadIcon } from "../../icons/DownloadIcon";
 import { AuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { ButtonAddOffCustomer } from "../Modals/AddOffCustomers/ButtonAddOffCustomer";
 import { formatDate } from "../../helpers";
 
@@ -41,7 +40,7 @@ export const Orders = () => {
   if (!user) {
     return (
       <Box bg={"secondary"} minH={24} minW={24}>
-        Tenes que iniciar sesion pa
+        Tenes que iniciar sesion
       </Box>
     );
   }
@@ -51,7 +50,6 @@ export const Orders = () => {
     { value: "produccion", label: "En producción", color: "orange.500" },
     { value: "entregado", label: "Entregado", color: "green.500" },
     { value: "todas", label: "Todas", color: "green.500" },
-
   ];
 
   //CONTROLADOR DEL FILTRO
@@ -107,20 +105,6 @@ export const Orders = () => {
   handleSub();
 
   const tHead = orders.length > 0 ? Object.keys(orders[0]) : [];
-
-  // const formatDate = (fechaOriginal) => {
-  //   const fecha = new Date(fechaOriginal);
-  //   const año = fecha.getFullYear();
-  //   const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-  //   const dia = String(fecha.getDate()).padStart(2, "0");
-  //   const horas = String(fecha.getHours()).padStart(2, "0");
-  //   const minutos = String(fecha.getMinutes()).padStart(2, "0");
-  //   const segundos = String(fecha.getSeconds()).padStart(2, "0");
-
-  //   const fechaFormateada = `${dia}-${mes}-${año} ${horas}:${minutos}:${segundos}`;
-
-  //   return fechaFormateada;
-  // };
 
   const filteredOrders =
     filterState === "Todas"
